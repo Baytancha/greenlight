@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json" // New import
 	"net/http"
 )
 
@@ -9,23 +8,38 @@ import (
 // application status, operating environment and version.
 func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
 	// Create a map which holds the information that we want to send in the response.
-	data := map[string]string{
-		"status":      "available",
-		"environment": app.config.env,
-		"version":     version,
+	// data := map[string]string{
+	// 	"status":      "available",
+	// 	"environment": app.config.env,
+	// 	"version":     version,
+	// }
+
+	// Declare an envelope map containing the data for the response. Notice that the way
+	// we've constructed this means the environment and version data will now be nested
+	// under a system_info key in the JSON response.
+	env := envelope{
+		"status": "available",
+		"system_info": map[string]string{
+			"environment": app.config.env,
+			"version":     version,
+		},
 	}
+
+	err := app.writeJSON(w, http.StatusOK, env, nil)
 	// Pass the map to the json.Marshal() function. This returns a []byte slice
 	// containing the encoded JSON. If there was an error, we log it and send the client
 	// a generic error message.
-	js, err := json.Marshal(data)
+
 	if err != nil {
-		app.logger.Println(err)
-		http.Error(w, "The server encountered a problem and could not process your request", http.StatusInternalServerError)
-		return
+		// Use the new serverErrorResponse() helper.
+		app.serverErrorResponse(w, r, err)
+		//app.logger.Println(err)
+		//http.Error(w, "The server encountered a problem and could not process your request", http.StatusInternalServerError)
 	}
+
 	// Append a newline to the JSON. This is just a small nicety to make it easier to
 	// view in terminal applications.
-	js = append(js, '\n')
+	//js = append(js, '\n')
 	// fmt.Fprintln(w, "status: available")
 	// fmt.Fprintf(w, "environment: %s\n", app.config.env)
 	// fmt.Fprintf(w, "version: %s\n", version)
@@ -39,7 +53,7 @@ func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Reques
 	// Set the "Content-Type: application/json" header on the response. If you forget to
 	// this, Go will default to sending a "Content-Type: text/plain; charset=utf-8"
 	// header instead.
-	w.Header().Set("Content-Type", "application/json")
+	//w.Header().Set("Content-Type", "application/json")
 	// Write the JSON as the HTTP response body.
-	w.Write([]byte(js))
+	//w.Write([]byte(js))
 }
