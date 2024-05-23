@@ -85,8 +85,10 @@ func (app *application) exampleHandler(w http.ResponseWriter, r *http.Request) {
 	// http.ResponseWriter.
 	err := json.NewEncoder(w).Encode(data)
 	if err != nil {
-		app.logger.Println(err)
+		app.logger.Error(err.Error())
 		http.Error(w, "The server encountered a problem and could not process your request", http.StatusInternalServerError)
+		//app.logger.Println(err)
+		//http.Error(w, "The server encountered a problem and could not process your request", http.StatusInternalServerError)
 	}
 }
 

@@ -15,7 +15,13 @@ func (app *application) failedValidationResponse(w http.ResponseWriter, r *http.
 // book we'll upgrade this to use structured logging, and record additional information
 // about the request including the HTTP method and URL.
 func (app *application) logError(r *http.Request, err error) {
-	app.logger.Println(err)
+	var (
+		method = r.Method
+		uri    = r.URL.RequestURI()
+	)
+
+	app.logger.Error(err.Error(), "method", method, "uri", uri)
+	//app.logger.Info(err)
 }
 
 // The errorResponse() method is a generic helper for sending JSON-formatted error
