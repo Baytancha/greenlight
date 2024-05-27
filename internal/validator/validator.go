@@ -2,6 +2,7 @@ package validator
 
 import (
 	"regexp"
+	"slices"
 )
 
 // Declare a regular expression for sanity checking the format of email addresses (we'll
@@ -54,16 +55,33 @@ func In(value string, list ...string) bool {
 	return false
 }
 
+// Generic function which returns true if a specific value is in a list of permitted
+// values.
+func PermittedValue[T comparable](value T, permittedValues ...T) bool {
+	return slices.Contains(permittedValues, value)
+}
+
 // Matches returns true if a string value matches a specific regexp pattern.
 func Matches(value string, rx *regexp.Regexp) bool {
 	return rx.MatchString(value)
 }
 
 // Unique returns true if all string values in a slice are unique.
-func Unique(values []string) bool {
-	uniqueValues := make(map[string]bool)
+// func Unique(values []string) bool {
+// 	uniqueValues := make(map[string]bool)
+// 	for _, value := range values {
+// 		uniqueValues[value] = true
+// 	}
+// 	return len(values) == len(uniqueValues)
+// }
+
+// Generic function which returns true if all values in a slice are unique.
+func Unique[T comparable](values []T) bool {
+	uniqueValues := make(map[T]bool)
+
 	for _, value := range values {
 		uniqueValues[value] = true
 	}
+
 	return len(values) == len(uniqueValues)
 }
