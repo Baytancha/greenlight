@@ -4,10 +4,12 @@ import (
 	"context"      // New import
 	"database/sql" // New import
 	"flag"
-	"fmt"
+
+	//"fmt"
 	"log"
 	"log/slog"
-	"net/http"
+
+	//"net/http"
 	"os"
 	"time"
 
@@ -150,27 +152,31 @@ func main() {
 	}
 	// Declare a new servemux and add a /v1/healthcheck route which dispatches requests
 	// to the healthcheckHandler method (which we will create in a moment).
-	mux := http.NewServeMux()
-	mux.HandleFunc("/v1/healthcheck", app.healthcheckHandler)
+	//mux := http.NewServeMux()
+	//mux.HandleFunc("/v1/healthcheck", app.healthcheckHandler)
 	// Declare a HTTP server with some sensible timeout settings, which listens on the
 	// port provided in the config struct and uses the servemux we created above as the
 	// handler.
-	srv := &http.Server{
-		Addr:         fmt.Sprintf("127.0.0.1:%d", cfg.port),
-		Handler:      app.routes(),
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
-		ErrorLog:     slog.NewLogLogger(logger.Handler(), slog.LevelError),
-	}
-	// Start the HTTP server.
-	//logger.Info("starting %s server on %s", cfg.env, srv.Addr)
-	logger.Info("starting server", "addr", srv.Addr, "env", cfg.env)
-	// Because the err variable is now already declared in the code above, we need
-	// to use the = operator here, instead of the := operator.
-	err = srv.ListenAndServe()
+	err = app.serve()
 	logger.Error(err.Error())
 	os.Exit(1)
+
+	// srv := &http.Server{
+	// 	Addr:         fmt.Sprintf("127.0.0.1:%d", cfg.port),
+	// 	Handler:      app.routes(),
+	// 	IdleTimeout:  time.Minute,
+	// 	ReadTimeout:  10 * time.Second,
+	// 	WriteTimeout: 30 * time.Second,
+	// 	ErrorLog:     slog.NewLogLogger(logger.Handler(), slog.LevelError),
+	// }
+	// // Start the HTTP server.
+	// //logger.Info("starting %s server on %s", cfg.env, srv.Addr)
+	// logger.Info("starting server", "addr", srv.Addr, "env", cfg.env)
+	// // Because the err variable is now already declared in the code above, we need
+	// // to use the = operator here, instead of the := operator.
+	// err = srv.ListenAndServe()
+	// logger.Error(err.Error())
+	// os.Exit(1)
 	//logger.Fatal(err)
 
 }

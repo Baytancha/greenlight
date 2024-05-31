@@ -30,6 +30,7 @@ func (app *application) routes() http.Handler {
 	//for replacing a resource in full).
 	router.HandlerFunc(http.MethodPatch, "/v1/movies/:id", app.updateMovieHandler)
 	router.HandlerFunc(http.MethodDelete, "/v1/movies/:id", app.deleteMovieHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/users", app.registerUserHandler)
 	// Return the httprouter instance.
 	return app.recoverPanic(app.rateLimit(router))
 }
